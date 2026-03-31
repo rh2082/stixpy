@@ -1,9 +1,7 @@
 import astropy
 import astropy.coordinates as coord
 import astropy.units as u
-import numpy as np
 from astropy.coordinates import QuantityAttribute
-from astropy.time import Time
 from astropy.wcs import WCS
 from sunpy.coordinates.frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 from sunpy.coordinates.frames import HeliographicStonyhurst, SunPyBaseCoordinateFrame
@@ -75,10 +73,7 @@ class STIXImaging(SunPyBaseCoordinateFrame):
     @property
     def obstime_avg(self):
         r"""Average time of the observation 'mean(obstime, obstime_end)'."""
-        if self.obstime_end is None:
-            return self.obstime
-
-        return np.mean(Time([self.obstime, self.obstime_end]))
+        return self.obstime + (self.obstime_end - self.obstime) / 2
 
     def __init__(self, *args, **kwargs):
         # if no explicitly given set endtime to start time
@@ -164,12 +159,9 @@ def stix_frame_to_wcs(frame, projection="TAN"):
     wcs.wcs.aux.dsun_obs = obs_frame.radius.to_value(u.m)
 
     wcs.wcs.datebeg = frame.obstime.utc.iso
-    if frame.obstime_end is not None:
-        wcs.wcs.dateend = frame.obstime_end.utc.iso
-    if frame.obstime_avg is not None:
-        wcs.wcs.dateavg = frame.obstime_avg.utc.iso
-    if frame.obstime_avg is not None:
-        wcs.wcs.dateobs = frame.obstime_avg.utc.iso
+    wcs.wcs.dateend = frame.obstime_end.utc.iso
+    wcs.wcs.dateavg = frame.obstime_avg.utc.iso
+    wcs.wcs.dateobs = frame.obstime_avg.utc.iso
     wcs.wcs.cunit = ["arcsec", "arcsec"]
     wcs.wcs.ctype = [STIX_X_CTYPE, STIX_Y_CTYPE]
 

@@ -68,11 +68,13 @@ def get_hpc_info(times, end_time=None):
     -------
 
     """
+    if end_time is not None:
+        end_time = end_time.max()
     aux = _get_ephemeris_data(times.min(), end_time or times.max())
 
     indices = np.argwhere((aux["time"] >= times.min()) & (aux["time"] <= times.max()))
     if end_time is not None:
-        indices = np.argwhere((aux["time"] >= times.min()) & (aux["time"] <= end_time))
+        indices = np.argwhere((aux["time"] >= times.min()) & (aux["time"] <= end_time.max()))
     indices = indices.flatten()
 
     if end_time is not None and times.size == 1 and indices.size >= 2:
@@ -216,7 +218,7 @@ def stixim_to_hpc(stxcoord, hpcframe):
 
     obstime = stxcoord.obstime
     if stxcoord.obstime_end is not None:
-        obstime = np.mean(Time([stxcoord.obstime, stxcoord.obstime_end]))
+        obstime = stxcoord.obstime + (stxcoord.obstime_end - stxcoord.obstime) / 2
 
     solo_heeq = HeliographicStonyhurst(solo_pos_heeq.T, representation_type="cartesian", obstime=obstime)
 
@@ -249,7 +251,7 @@ def hpc_to_stixim(hpccoord, stxframe):
 
     obstime = stxframe.obstime
     if stxframe.obstime_end is not None:
-        obstime = np.mean(Time([stxframe.obstime, stxframe.obstime_end]))
+        obstime = stxframe.obstime + (stxframe.obstime_end - stxframe.obstime) / 2
     solo_hgs = HeliographicStonyhurst(solo_pos_heeq.T, representation_type="cartesian", obstime=obstime)
 
     # Create SOLO HPC
