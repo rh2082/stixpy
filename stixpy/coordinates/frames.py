@@ -81,6 +81,9 @@ class STIXImaging(SunPyBaseCoordinateFrame):
         return np.mean(Time([self.obstime, self.obstime_end]))
 
     def __init__(self, *args, **kwargs):
+        # if no explicitly given set endtime to start time
+        if "obstime_end" not in kwargs and "obstime" in kwargs:
+            kwargs["obstime_end"] = kwargs["obstime"]
         super().__init__(*args, **kwargs)
         if self.obstime is not None and self.obstime_end is not None:
             if self.obstime.shape != self.obstime_end.shape:
