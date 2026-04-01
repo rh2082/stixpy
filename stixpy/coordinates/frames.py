@@ -76,7 +76,7 @@ class STIXImaging(SunPyBaseCoordinateFrame):
         return self.obstime + (self.obstime_end - self.obstime) / 2
 
     def __init__(self, *args, **kwargs):
-        # if no explicitly given set endtime to start time
+        # If `obstime_end` isn't provided, default it to `obstime`.
         if "obstime_end" not in kwargs and "obstime" in kwargs:
             kwargs["obstime_end"] = kwargs["obstime"]
         super().__init__(*args, **kwargs)

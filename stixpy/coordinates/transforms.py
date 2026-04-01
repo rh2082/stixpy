@@ -70,7 +70,7 @@ def get_hpc_info(times, end_time=None):
     """
     if end_time is not None:
         end_time = end_time.max()
-    aux = _get_ephemeris_data(times.min(), end_time or times.max())
+    aux = _get_ephemeris_data(times.min(), end_time if end_time is not None else times.max())
 
     indices = np.argwhere((aux["time"] >= times.min()) & (aux["time"] <= times.max()))
     if end_time is not None:
