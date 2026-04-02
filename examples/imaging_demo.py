@@ -131,10 +131,6 @@ bp_image = vis_to_image(vis10_7, imsize, pixel_size=pixel)
 ###############################################################################
 # Obtain the necessary ephemeris data
 
-# vis_tr = TimeRange(vis.meta["time_range"])
-# roll, solo_xyz, pointing = get_hpc_info(vis_tr.start, vis_tr.end)
-# solo = HeliographicStonyhurst(*solo_xyz, obstime=vis_tr.center, representation_type="cartesian")
-# coord_stix = center_hpc.transform_to(STIXImaging(obstime=vis_tr.start, obstime_end=vis_tr.end, observer=solo))
 header = make_fitswcs_header(
     bp_image, center_stix, telescope="STIX", observatory="Solar Orbiter", scale=[10, 10] * u.arcsec / u.pix
 )

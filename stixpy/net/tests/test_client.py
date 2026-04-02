@@ -244,22 +244,37 @@ def test_search_date_product_sci():
     assert len(res) == 1
 
 
+@pytest.fixture(scope="module")
+def tally_counts():
+    counts = {"individual_sum": 0, "total_reported": 0}
+    yield counts
+    # After all tests in the module finish, do the final check
+    assert counts["individual_sum"] == counts["total_reported"], (
+        f"Sum of parts ({counts['individual_sum']}) != Total ({counts['total_reported']})"
+    )
+
+
 @pytest.mark.parametrize(
-    "query, num",
+    "query, expetect_len, is_total",
     [
-        ([a.Instrument.stix], 67),
-        ([a.Instrument.stix, a.stix.DataType.ql], 6),
-        ([a.Instrument.stix, a.stix.DataType.sci], 58),
-        ([a.Instrument.stix, a.stix.DataType.hk], 1),
-        ([a.Instrument.stix, a.stix.DataType.asp], 1),
-        ([a.Instrument.stix, a.stix.DataType.cal], 1),
+        ([a.Instrument.stix], 67, True),
+        ([a.Instrument.stix, a.stix.DataType.ql], 6, False),
+        ([a.Instrument.stix, a.stix.DataType.sci], 58, False),
+        ([a.Instrument.stix, a.stix.DataType.hk], 1, False),
+        ([a.Instrument.stix, a.stix.DataType.asp], 1, False),
+        ([a.Instrument.stix, a.stix.DataType.cal], 1, False),
     ],
 )
 @pytest.mark.remote_data
-def test_fido(query, num):
+def test_fido(query, expetect_len, is_total, tally_counts):
     res = Fido.search(a.Time("2020-11-17T00:00", "2020-11-17T23:59"), *query)
-    len_total = len(res["stix"])
-    assert len_total == num
+    actual_len = len(res["stix"])
+    assert actual_len == expetect_len
+
+    if is_total:
+        tally_counts["total_reported"] = actual_len
+    else:
+        tally_counts["individual_sum"] += actual_len
 
 
 @pytest.mark.remote_data

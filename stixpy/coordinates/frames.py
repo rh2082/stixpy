@@ -82,7 +82,7 @@ class STIXImaging(SunPyBaseCoordinateFrame):
         super().__init__(*args, **kwargs)
         if self.obstime is not None and self.obstime_end is not None:
             if self.obstime.shape != self.obstime_end.shape:
-                raise ValueError("Both obstime and obstime_end must be either scaler or 1d array os same size.")
+                raise ValueError("Both 'obstime' and 'obstime_end' must be either scaler or 1d array of the same size.")
 
 
 def stix_wcs_to_frame(wcs):
